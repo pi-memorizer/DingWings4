@@ -125,6 +125,10 @@ bool drawTextBox(string msg, int count)
 	float df = 1.0;
 	int width = WIDTH / 8 - 2;
 	int wave = 0;
+	int rainbow = 0;
+	int rainbowBanding = 0;
+	int jitter = 0, jitterAmount = 0;
+
 	int nextSpace = findNextSpace(msg, 0);
 	while (j < msg.length()&& (int)f < count)
 	{
@@ -137,20 +141,30 @@ bool drawTextBox(string msg, int count)
 				{
 					switch (msg[j])
 					{
-					case 's':
+					case 's': //speed 0.00 through 9.99
 						df = (float)(msg[j + 1] - '0') + .1*(msg[j + 2] - '0') + .01*(msg[j + 3] - '0');
 						df = 1 / df;
 						j += 4;
 						break;
-					case 'c':
+					case 'c': //color 0x000000 through 0xFFFFFF
 						r = hexChar(msg[j + 1]) * 16 + hexChar(msg[j + 2]);
 						g = hexChar(msg[j + 3]) * 16 + hexChar(msg[j + 4]);
 						b = hexChar(msg[j + 5]) * 16 + hexChar(msg[j + 6]);
 						j += 7;
 						break;
-					case 'w':
-						wave = (msg[j+1]-'0');
+					case 'w': //wave 0 through 9
+						wave = (msg[j + 1] - '0');
 						j += 2;
+						break;
+					case 'r': //rainbow 0 through 9 (speed), 0 through 9 (banding)
+						rainbow = (msg[j + 1] - '0');
+						rainbowBanding = (msg[j + 2] - '0')+1;
+						j += 3;
+						break;
+					case 'j': //jitter 0 through 9 (speed), 0 through 9 (amount)
+						jitter = (msg[j + 1] - '0');
+						jitterAmount = (msg[j + 2] - '0') + 1;
+						j += 3;
 						break;
 					default:
 						j++;
@@ -172,10 +186,72 @@ bool drawTextBox(string msg, int count)
 			x = 0;
 		}
 
+		int dx = 0;
 		int y = rect.y + 8 * line;
 		if (wave!=0) y += sin(((frames + (int)f) / 5.0))*wave;
-		drawCharacter(msg[j], 8 + 8 * x, y,r,g,b);
+		if (jitter != 0)
+		{
+			int r = rand()/25;
+			if (r < jitter)
+			{
+				if (jitterAmount == 10)
+				{
+					x += rand() % (jitterAmount * 2 + 1) - jitterAmount;
+				} else {
+					dx += rand() % (jitterAmount * 2 + 1) - jitterAmount;
+				}
+				y += rand() % (jitterAmount * 2 + 1) - jitterAmount;
+			}
+		}
+		int _r = r;
+		int _g = g;
+		int _b = b;
+		if (rainbow != 0)
+		{
+			int frame = (frames*rainbow + j*rainbowBanding*4) % (256 * 3);
+			//r = 0;
+			//g = 0;
+			//b = 0;
+			if (frame < 128)
+			{
+				r += 255;
+				g += 2 * (frame);
+			}
+			else if (frame < 256)
+			{
+				g += 255;
+				r += 255 - 2 * (frame - 128);
+			}
+			else if (frame < 128 * 3)
+			{
+				g += 255;
+				b += 2 * (frame - 128 * 2);
+			}
+			else if (frame < 128 * 4)
+			{
+				b += 255;
+				g += 255 - 2 * (frame - 128 * 3);
+			}
+			else if (frame < 128 * 5)
+			{
+				b += 255;
+				r += 2 * (frame - 128 * 4);
+			}
+			else {
+				r += 255;
+				b += 255 - 2 * (frame - 128 * 5);
+			}
+		}
 
+		if (r > 255) r = 255;
+		if (g > 255) g = 255;
+		if (b > 255) b = 255;
+
+		drawCharacter(msg[j], 8 + 8 * x + dx, y, r, g, b);
+
+		r = _r;
+		g = _g;
+		b = _b;
 		j++;
 		nextSpace = findNextSpace(msg, j);
 		x++;

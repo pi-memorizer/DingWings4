@@ -186,6 +186,24 @@ void fillRect(Rect *rect)
 	SDL_RenderFillRect(renderer, &r);
 }
 
+void fillRect(Rect *rect, int blendMode)
+{
+	SDL_Rect r;
+	r.w = rect->w;
+	r.h = rect->h;
+	r.x = rect->x;
+	r.y = rect->y;
+	if(blendMode==BLENDMODE_ADD)
+		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_ADD);
+	else if(blendMode==BLENDMODE_BLEND)
+		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+	else if(blendMode==BLENDMODE_MOD)
+		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_MOD);
+	else SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+	SDL_RenderFillRect(renderer, &r);
+	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+}
+
 int ticks = SDL_GetTicks();
 
 void delay(int millis)

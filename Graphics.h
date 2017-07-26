@@ -3,6 +3,11 @@
 #include <string>
 using namespace std;
 
+#define BLENDMODE_NONE 0
+#define BLENDMODE_BLEND 1
+#define BLENDMODE_ADD 2
+#define BLENDMODE_MOD 3
+
 //generic rectangle class with x and y coordinates as well as width and height
 struct Rect
 {
@@ -23,6 +28,7 @@ void drawTexture(Texture *texture, Rect *source, Rect *dest); //draws a textures
 void drawTexture(Texture *texture, Rect *source, Rect *dest, int alpha); //same as before with optional alpha from 0 to 255
 Texture *createTexture(int width, int height); //creates a blank texture with given width and height, used for individual player screens
 void fillRect(Rect *r); //fills a small area of the screen akin to clearScreen()
+void fillRect(Rect *r,int blendMode);
 Texture *loadTexture(string filename); //loads a texture from a file
 void getTextureSize(Texture *texture, int *w, int *h); //gets the dimensions of a texture
 void destroyTexture(Texture *texture); //removes a texture from memory

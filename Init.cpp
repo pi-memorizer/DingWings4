@@ -8,6 +8,7 @@
 #include "IO.h"
 #include "SoundSystem.h"
 #include "GameState.h"
+#include "Animation.h"
 
 void testScript(Player*p, int x, int y, Script *s)
 {
@@ -20,6 +21,8 @@ void testScript(Player*p, int x, int y, Script *s)
 	else {
 		s->textBox("You suck!", true);
 	}
+	s->blockingAnimation(new FadeAnimation(p, 255, 0, 0, 120, true));
+	s->blockingAnimation(new FadeAnimation(p, 255, 0, 0, 120, false));
 }
 
 void nothing() {} //run variant
@@ -31,7 +34,7 @@ bool nothing(Player *p, int x, int y) { //interact variant
 	}
 	if (x == -1 && y == 1)
 	{
-		bTextbox(p,"Hello this a test <s010>that I hope <s100c00FF00>goes<c000000> <w1>well bye", false);
+		bTextbox(p,"<j51>Hello this a test <j00s010>that I <f1>hope<f0> <s100r99>goes<r00> <w1>well bye", false);
 	}
 	return false;
 }
