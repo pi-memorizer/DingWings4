@@ -26,7 +26,7 @@ Sprite ***chars;
 List<SDL_Joystick*> joysticks;
 struct PlayerMap
 {
-	bool a = false, b = false, up = false, down = false, left = false, right = false;
+	bool a = false, b = false, c = false, up = false, down = false, left = false, right = false;
 	bool playing = false;
 };
 
@@ -130,6 +130,15 @@ void drawTexture(Texture *texture, Rect *source, Rect *dest)
 
 void drawTexture(Texture *texture, Rect *source, Rect *dest, int alpha)
 {
+	if (alpha == 255)
+	{
+		drawTexture(texture, source, dest);
+		return;
+	}
+	else if (alpha == 0)
+	{
+		return;
+	}
 	SDL_Rect s, d;
 	s.w = source->w;
 	s.h = source->h;
@@ -231,12 +240,22 @@ int startGame()
 		return -4;
 	}
 	SDL_GetDesktopDisplayMode(0, &displayMode);
-	window = SDL_CreateWindow("Revengine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, displayMode.w, displayMode.h, SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN_DESKTOP);
+	window = SDL_CreateWindow("Revengine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, displayMode.w, displayMode.h, SDL_WINDOW_SHOWN);
+
 	if (window == nullptr)
 	{
 		exitGame();
 		return -1;
 	}
+
+	setWindowFullscreen(false);
+	int scaleX = getScreenWidth() / WIDTH;
+	int scaleY = getScreenHeight() / HEIGHT;
+	int scalar = scaleX;
+	if (scaleY < scaleX) scalar = scaleY;
+	setWindowSize(scalar * WIDTH, scalar * HEIGHT);
+	centerWindow();
+
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (renderer == nullptr)
 	{
@@ -250,6 +269,10 @@ int startGame()
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
 	for (int i = SDLK_a; i <= SDLK_z; i++)
 		keys.add(i, false);
+	keys.add(SDLK_UP, false);
+	keys.add(SDLK_DOWN, false);
+	keys.add(SDLK_LEFT, false);
+	keys.add(SDLK_RIGHT, false);
 	keys.add(SDLK_F4, false);
 	keys.add(SDLK_F11, false);
 	keys.add(SDLK_ESCAPE, false);
@@ -429,6 +452,10 @@ void switchKey(int k, bool state)
 	case SDLK_x:
 		playerMap[0].b = state;
 		break;
+	case SDLK_l:
+	case SDLK_c:
+		playerMap[0].c = state;
+		break;
 	default:
 		break;
 	}
@@ -543,12 +570,15 @@ bool getEvent(Event *e)
 					addPlayer(sdl.jaxis.which);
 					playerMap[sdl.jaxis.which].playing = true;
 				}
-				if (sdl.jbutton.button % 2 == 0)
+				if (sdl.jbutton.button % 3 == 0)
 				{
 					playerMap[sdl.jbutton.which].a = true;
 				}
-				else {
+				else if(sdl.jbutton.button % 3 == 1){
 					playerMap[sdl.jbutton.which].b = true;
+				}
+				else {
+					playerMap[sdl.jbutton.which].c = true;
 				}
 			}
 		}
@@ -556,12 +586,15 @@ bool getEvent(Event *e)
 		{
 			if (sdl.jbutton.which < MAX_PLAYERS)
 			{
-				if (sdl.jbutton.button % 2 == 0)
+				if (sdl.jbutton.button % 3 == 0)
 				{
 					playerMap[sdl.jbutton.which].a = false;
 				}
-				else {
+				else if(sdl.jbutton.button% 3 == 1) {
 					playerMap[sdl.jbutton.which].b = false;
+				}
+				else {
+					playerMap[sdl.jbutton.which].c = false;
 				}
 			}
 		}
@@ -600,6 +633,8 @@ bool getKey(Player *p, EventKey key)
 		return m->a;
 	case KEY_B:
 		return m->b;
+	case KEY_C:
+		return m->c;
 	case KEY_UP:
 		return m->up;
 	case KEY_DOWN:
@@ -653,8 +688,10 @@ void playSound(string name)
 	}
 }
 
+#if DEBUG == true
 #ifdef main
 #undef main
+#endif
 #endif
 int main(int argc, char **argv)
 {
@@ -665,9 +702,9 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-	addPlayer(0);
-
 	init();
+
+	addPlayer(0);
 
 	try {
 		while (theLoop());

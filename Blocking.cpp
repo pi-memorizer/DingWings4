@@ -330,15 +330,34 @@ void OptionPane::draw()
 {
 	caller->draw();
 	if (drawTextBox(msg, count)) done = true;
-	drawCharacter('>', 0, choice * 8, 0,0,0);
+	int maxLength = 0;
+	for (int i = 0; i < numChoices; i++)
+	{
+		if (choices[i].length() > maxLength)
+		{
+			maxLength = choices[i].length();
+		}
+	}
+	setDrawColor(255, 255, 255, 255);
+	Rect r;
 	for (int i = 0; i < numChoices; i++)
 	{
 		int length = choices[i].length();
+		r.x = WIDTH - 8 * maxLength - 8;
+		r.y = HEIGHT - (8 + 2 * 4 * 8) - 8 * numChoices+8*i;
+		r.w = maxLength * 8+8;
+		r.h = 8;
+		fillRect(&r);
 		for (int j = 0; j < length; j++)
 		{
-			drawCharacter(choices[i][j],WIDTH - 8 * length + j * 8, i * 8,0,0,0);
+			drawCharacter(choices[i][j],WIDTH - 8 * length + j * 8, r.y,0,0,0);
 		}
 	}
+	r.x = WIDTH - 8 - 8 * maxLength;
+	r.y = HEIGHT - (8 + 2 * 4 * 8) - 8 * numChoices + choice * 8;
+	r.w = 8;
+	r.h = 8;
+	drawCharacter('>', r.x, r.y, 0, 0, 0);
 }
 
 void bTextbox(Player *p, string s, bool skippable)
@@ -552,32 +571,33 @@ Sprite *InventoryDialogue::inventoryPointer = nullptr;
 Sprite *InventoryDialogue::inventoryBadSpot = nullptr;
 
 int InventoryDialogue::positionPairs[2*INVENTORY_SLOTS] = {
-	21,15,
-	117,28,
-	64,90
+	144,37,
+	75,82,
+	205,89,
+	93,160,
+	185,165
 };
 
 InventoryDialogue::InventoryDialogue(Player *p, unsigned long long categories, Item **output) : GameState(p)
 {
 	this->categories = categories;
 	this->output = output;
+	pointerX = 144;
+	pointerY = 37;
 }
 
 void InventoryDialogue::run()
 {
-	int index = 0;
+	int index = moveToNearest();
 	const int MOVE_AMOUNT = 100;
 	startMenu();
 	if (getKey(p,KEY_A) && !a)
 	{
 		if (p->inventory[index].item != nullptr)
 		{
-			if (categories == (p->inventory[index].item->flags&categories))
-			{
-				*output = p->inventory[index].item;
-				p->popState();
-				return;
-			}
+			*output = p->inventory[index].item;
+			p->popState();
+			return;
 		}
 		else {
 			*output = nullptr;
@@ -652,9 +672,12 @@ void InventoryDialogue::draw()
 {
 	if (inventoryUI == nullptr)
 	{
-		inventoryUI = new Sprite("inventoryUI", 0, 0);
-		inventoryPointer = new Sprite("inventoryPointer", 0, 0);
-		inventoryBadSpot = new Sprite("inventoryBadSpot", 0, 0);
+		inventoryUI = new Sprite("inventory", 0, 0);
+		inventoryPointer = new Sprite("cursor", 0, 0);
+	}
+	if (pointerX == -1||pointerX==0)
+	{
+		moveToNearest();
 	}
 	inventoryUI->draw(0, 0);
 	inventoryPointer->draw(pointerX, pointerY);
@@ -669,10 +692,6 @@ void InventoryDialogue::draw()
 			if (s != nullptr)
 			{
 				s->draw(x, y);
-				if (categories != (categories&item->flags))
-				{
-					inventoryBadSpot->draw(x, y);
-				}
 			}
 		}
 	}

@@ -86,4 +86,9 @@ struct ApplicationClosingException
 	~ApplicationClosingException();
 };
 
+
+void loseGame(Player*p, int x, int y, Script *s);
+
+void useItemScript(Player *p, int x, int y, Script *s);
+
 #endif

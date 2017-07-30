@@ -10,7 +10,7 @@ class GameState
 {
 protected:
 	Player *p;
-	bool a, b, up, down, left, right; //what the buttons were last frame
+	bool a, b, c, up, down, left, right; //what the buttons were last frame
 public:
 	List<Animation*> animations; //any animations associated with the GameState
 	GameState(Player *player); //game states are always bound to a specific player
@@ -25,6 +25,16 @@ class WorldState : public GameState
 {
 public:
 	WorldState(Player *player);
+	virtual void draw();
+	virtual void run();
+};
+
+class ImageScreen : public GameState
+{
+	Sprite *sprite;
+	GameState *nextState;
+public:
+	ImageScreen(Player *p, Sprite *sprite, GameState *nextState);
 	virtual void draw();
 	virtual void run();
 };

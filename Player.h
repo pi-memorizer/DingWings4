@@ -5,9 +5,12 @@
 
 //Anything dealing with individual players is here
 
-#define INVENTORY_SLOTS 3 //the max amount of inventory slots a player can have
+#define INVENTORY_SLOTS 5 //the max amount of inventory slots a player can have
+#define INVINCIBLE_TIME 120
 
 extern Sprite ** guy; //the current spritesheet for the main character
+
+class WormholeMachine;
 
 struct ItemNumberPair //holds items with their quantities, for use mainly in inventories
 {
@@ -23,7 +26,18 @@ class Player
 	bool cameraLocked = true;
 public:
 	friend int getOnscreenX(Player *p, int x); //allowed to access private data
-	friend int getOnscreenY(Player *p, int y); //allowed to access private data 
+	friend int getOnscreenY(Player *p, int y); //allowed to access private data
+	
+	
+	bool startText = false;
+
+
+	bool underground = false;
+	bool crappyFlag = false;
+	int lives = 3;
+	int invincibleTime = 0;
+	int targetWorldID = 0;
+	WormholeMachine * machine = nullptr;
 	int cameraX, cameraY; //the position of the camera (if not locked to player)
 	ItemNumberPair inventory[INVENTORY_SLOTS]; //the player's inventory
 	int width, height; //the dimensions of the player as far as collision is concerned
@@ -54,7 +68,7 @@ public:
 	int getCameraCenterY();
 };
 
-const int MAX_PLAYERS = 4; //the maximum amount of players for our game
+const int MAX_PLAYERS = 1; //the maximum amount of players for our game
 Player* getPlayer(int id); //gets a player based on id (not index in **players)
 void addPlayer(int id); //adds a player with a given id
 void removePlayer(int id); //removes a player based on id

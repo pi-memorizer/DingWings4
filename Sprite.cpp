@@ -43,11 +43,6 @@ Sprite::~Sprite()
 void Sprite::draw(int x, int y)
 {
 	Rect d;
-	if (this == nullptr)
-	{
-		cout << "wat" << endl;
-		return;
-	}
 	d.h = source.h;
 	d.w = source.w;
 	d.x = x + xOffset;
@@ -58,11 +53,6 @@ void Sprite::draw(int x, int y)
 void Sprite::draw(int x, int y, int alpha)
 {
 	Rect d;
-	if (this == nullptr)
-	{
-		cout << "wat" << endl;
-		return;
-	}
 	d.h = source.h;
 	d.w = source.w;
 	d.x = x + xOffset;

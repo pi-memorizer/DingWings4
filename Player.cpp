@@ -4,6 +4,7 @@
 #include "Item.h"
 #include "World.h"
 #include <random>
+#include "Blocking.h"
 
 Player **players = new Player*[0];
 int numPlayers = 0;
@@ -45,6 +46,7 @@ void addPlayer(int id)
 			buffer[i] = players[i];
 		}
 		buffer[numPlayers] = new Player(id);
+		buffer[numPlayers]->setWorldID(buffer[numPlayers]->getWorldID());
 		delete[] players;
 		players = buffer;
 		numPlayers++;
@@ -80,16 +82,24 @@ void removePlayer(int id)
 	}
 }
 
+extern Sprite *startScreen;
+
 Player::Player(int id)
 {
 	this->id = id;
-	x = -64;
-	y = -64;
-	worldID = 0;
-	width = 16;
-	height = 16;
+	//x = 35*TILE_SIZE;
+	//y = 23*TILE_SIZE;
+	//x = -32;
+	//y = -32;
+	//x = 26 * 32;
+	//y = 7 * 32;
+	x = 0;
+	y = 32 * 3;
+	worldID = 4;
+	width = 15;
+	height = 10;
 	texture = createTexture(WIDTH, HEIGHT);
-	pushState(new WorldState(this));
+	pushState(new ImageScreen(this,startScreen,new WorldState(this)));
 	for (int i = 0; i < INVENTORY_SLOTS; i++)
 	{
 		inventory[i].item = nullptr;
@@ -123,6 +133,7 @@ int Player::getWorldID()
 
 void Player::pushState(GameState *state)
 {
+	if (state == nullptr) throw ApplicationClosingException();
 	states.push(state);
 }
 
@@ -143,9 +154,13 @@ void Player::setState(GameState *state)
 
 Sprite *Player::getSprite()
 {
+	if (invincibleTime != 0)
+	{
+		if ((invincibleTime *8/ INVINCIBLE_TIME) % 2 == 0) return nullptr;
+	}
 	int i = dir;
 	if ((wait / 10) % 2 == 1) i += 4;
-	if ((dir == 1 || dir == 3) && (wait / 10) % 4 == 3) i += 4;
+	//if ((dir == 1 || dir == 3) && (wait / 10) % 4 == 3) i += 4;
 	return guy[i];
 }
 

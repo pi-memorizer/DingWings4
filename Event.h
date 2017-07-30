@@ -7,7 +7,7 @@
 
 enum EventType { EVENT_QUIT, EVENT_KEY_DOWN, EVENT_KEY_UP, EVENT_UNKNOWN };
 enum EventKey {
-	KEY_A, KEY_B, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_UNKNOWN
+	KEY_A, KEY_B, KEY_C, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_UNKNOWN
 };
 
 //Event data structure that holds the type and any special arguments

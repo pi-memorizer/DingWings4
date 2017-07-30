@@ -14,9 +14,12 @@ public:
 	bool virtual interact(Player *p, int x, int y) = 0;
 	bool virtual collides(int x, int y, int width, int height) = 0;
 	int virtual getLower(int x, int y) = 0;//lower map layer
+	void virtual setLower(int x, int y, int value) = 0;
 	int virtual getUpper(int x, int y) = 0;//upper map layer
 	int virtual getEffect(int x, int y) = 0; //effect layer
+	void virtual setUpper(int x, int y, int value) = 0;
 	int virtual getCollision(int x, int y) = 0; //collision layer
+	void virtual setCollision(int x, int y, int value) = 0; //collision layer
 	void addEntity(Entity *e);
 };
 
@@ -54,9 +57,14 @@ public:
 	bool interact(Player *p, int x, int y);
 	bool virtual collides(int x, int y, int width, int height);
 	int virtual getLower(int x, int y);
+	void virtual setLower(int x, int y, int value);
 	int virtual getUpper(int x, int y);
+	void virtual setUpper(int x, int y, int value);
 	int virtual getEffect(int x, int y);
 	int virtual getCollision(int x, int y);
+	void virtual setCollision(int x, int y, int value); //collision layer
 };
+
+void teleport(Player *p, int x, int y, int worldId);
 
 #endif

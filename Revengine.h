@@ -1,7 +1,7 @@
 #ifndef REVENGINE_H
 #define REVENGINE_H
 
-#define DEBUG true //turn to false before releasing game
+#define DEBUG false //turn to false before releasing game
 //#define UNIX true
 
 #include <string>
@@ -70,7 +70,9 @@ extern List<World*> worlds;//list of all the worlds
 int getOnscreenX(Player *p, int x); //gives the position on the screen of a coordinate with respect to the player's camera
 int getOnscreenY(Player *p, int y);
 int safeDiv(int x, int factor); //divides a number "safely", in other words, integer division with negatives the way we want it
+int safeMod(int x, int factor);
 bool rectCollides(int x1, int y1, int width1, int height1, int x2, int y2, int width2, int height2); //checks if two rectangles touch
 bool theLoop(); //the core game loops, returns false if the game needs to close
 void init(); //calls initializing code found in Init.cpp, but game scripting and stuff here
+void reset();
 #endif

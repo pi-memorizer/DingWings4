@@ -8,10 +8,10 @@ using namespace std;
 class Sprite
 {
 	Rect source;
-	int xOffset = 0, yOffset = 0;
 	bool hasOwnership = true;
 
 public:
+	int xOffset = 0, yOffset = 0;
 	Texture *sprite = nullptr;
 	Sprite(string filename, int xOffset, int yOffset); //load from file
 	Sprite(Sprite *spritesheet, int x, int y, int width, int height, int xOffset, int yOffset); //load from spreadsheet

@@ -183,3 +183,25 @@ void setFlag(string s, int v)
 		flags.add(s, v);
 	}
 }
+
+extern bool unlocked;
+
+void reset()
+{
+	init();
+	unlocked = false;
+	for (int i = 0; i < numPlayers; i++)
+	{
+		Player *p = players[i];
+		p->setWorldID(4);
+		p->x = 0;
+		p->y = 32 * 3;
+		for (int j = 0; j < INVENTORY_SLOTS; j++)
+		{
+			p->inventory[j].item = nullptr;
+			p->inventory[j].number = 0;
+		}
+		p->lives = 3;
+		p->invincibleTime = 0;
+	}
+}
